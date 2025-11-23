@@ -1,4 +1,4 @@
-import 'package:dio/dio.dart';
+import 'package:sample/core/network/api_client.dart';
 import 'package:sample/features/notes/data/models/note_model.dart';
 
 abstract class NoteRemoteDataSource {
@@ -10,36 +10,36 @@ abstract class NoteRemoteDataSource {
 }
 
 class NoteRemoteDataSourceImpl implements NoteRemoteDataSource {
-  final Dio dio;
-  NoteRemoteDataSourceImpl(this.dio);
+  final ApiClient apiClient;
+  NoteRemoteDataSourceImpl(this.apiClient);
 
   @override
   Future<List<NoteModel>> fetchNotes() async {
-    final resp = await dio.get('/notes');
-    final data = resp.data as List<dynamic>;
+    final resp = await apiClient.get('/notes');
+    final data = resp as List<dynamic>;
     return data.map((e) => NoteModel.fromJson(Map<String, dynamic>.from(e))).toList();
   }
 
   @override
   Future<NoteModel> fetchNote(int id) async {
-    final resp = await dio.get('/notes/$id');
-    return NoteModel.fromJson(Map<String, dynamic>.from(resp.data));
+    final resp = await apiClient.get('/notes/$id');
+    return NoteModel.fromJson(Map<String, dynamic>.from(resp));
   }
 
   @override
   Future<NoteModel> createNote(NoteModel note) async {
-    final resp = await dio.post('/notes', data: note.toJson());
-    return NoteModel.fromJson(Map<String, dynamic>.from(resp.data));
+    final resp = await apiClient.post('/notes', data: note.toJson());
+    return NoteModel.fromJson(Map<String, dynamic>.from(resp));
   }
 
   @override
   Future<NoteModel> updateNote(NoteModel note) async {
-    final resp = await dio.put('/notes/${note.id}', data: note.toJson());
-    return NoteModel.fromJson(Map<String, dynamic>.from(resp.data));
+    final resp = await apiClient.put('/notes/${note.id}', data: note.toJson());
+    return NoteModel.fromJson(Map<String, dynamic>.from(resp));
   }
 
   @override
   Future<void> deleteNote(int id) async {
-    await dio.delete('/notes/$id');
+    await apiClient.delete('/notes/$id');
   }
 }
